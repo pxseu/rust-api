@@ -9,7 +9,7 @@ mod send_message;
 #[get("/")]
 fn index_page() -> ApiResponse {
     ApiResponse {
-        json: json!({"message": "Welcome to the rewrite of the api!. It currently only works with request with the header `Accepts` set to `application/json`.",
+        json: json!({"message": "Welcome to the rewrite of the api!. It currently only works with request with the header `Accept` set to `application/json`.",
             "routes": [
                 "/v2/bajoJajo",
                 "/v2/sendMessage"
