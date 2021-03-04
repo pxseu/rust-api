@@ -14,7 +14,7 @@ mod catchers;
 
 fn main() {
     dotenv().ok();
-    
+
     let mut rocket = rocket::ignite();
     rocket = routes::mount(rocket);
     rocket = catchers::mount(rocket);
