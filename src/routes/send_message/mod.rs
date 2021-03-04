@@ -9,7 +9,7 @@ pub struct ApiSendMessage {
     pub message: String,
 }
 
-#[post("/v2/sendMessage", format = "application/json", data = "<data>")]
+#[post("/v2/sendMessage", data = "<data>")]
 fn send_message(data: Json<ApiSendMessage>) -> ApiResponse {
     if data.message.trim() == "" {
         return ApiResponse {
