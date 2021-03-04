@@ -1,9 +1,9 @@
 use rand::Rng;
-use rocket::Rocket;
+use rocket::Route;
 use rocket::http::Status;
 use super::super::responder::ApiResponse;
 
-#[get("/bajoJajo", format = "application/json")]
+#[get("/v2/bajoJajo", format = "application/json")]
 fn bajo_jajo_random() -> ApiResponse {
     let mut rng = rand::thread_rng();
 
@@ -13,7 +13,7 @@ fn bajo_jajo_random() -> ApiResponse {
     }
 }
 
-#[get("/bajoJajo?<repeat>", format = "application/json")]
+#[get("/v2/bajoJajo?<repeat>", format = "application/json")]
 fn bajo_jajo_defined(repeat: usize) -> ApiResponse {
     if !(1 <= repeat && repeat >= 1000000) {
         return ApiResponse {
@@ -32,6 +32,6 @@ fn generate_bajo_jajo(repeat: usize) -> String {
     "bajo Jajo ".repeat(repeat).trim().to_string()
 }
 
-pub fn mount(rocket: Rocket) -> Rocket {
-    rocket.mount("/v2", routes![bajo_jajo_random, bajo_jajo_defined])
+pub fn routes() -> Vec<Route> {
+    routes![bajo_jajo_random, bajo_jajo_defined]
 }

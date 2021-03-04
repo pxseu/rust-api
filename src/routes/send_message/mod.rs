@@ -1,4 +1,4 @@
-use rocket::Rocket;
+use rocket::Route;
 use rocket::http::Status;
 use rocket_contrib::json::{Json};
 use super::super::responder::ApiResponse;
@@ -9,7 +9,7 @@ pub struct ApiSendMessage {
     pub message: String,
 }
 
-#[post("/sendMessage", format = "application/json", data = "<data>")]
+#[post("/v2/sendMessage", format = "application/json", data = "<data>")]
 fn send_message(data: Json<ApiSendMessage>) -> ApiResponse {
     if data.message.trim() == "" {
         return ApiResponse {
@@ -32,7 +32,7 @@ fn send_message(data: Json<ApiSendMessage>) -> ApiResponse {
         "username": "test", "content": "hello"
     }));
 
-    if response.status() == 429{
+    if response.status() == 429 {
         return ApiResponse {
             json: json!({"status": 503, "message":"The backend webhook is getting rate limited. Please try again later."}),
             status: Status::ServiceUnavailable
@@ -45,6 +45,6 @@ fn send_message(data: Json<ApiSendMessage>) -> ApiResponse {
     }
 }
 
-pub fn mount(rocket: Rocket) -> Rocket {
-    rocket.mount("/v2", routes![send_message])
+pub fn routes() -> Vec<Route> {
+    routes![send_message]
 }

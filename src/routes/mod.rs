@@ -1,4 +1,4 @@
-use rocket::Rocket;
+use rocket::Route;
 use rocket::http::Status;
 use super::responder::ApiResponse;
 
@@ -18,11 +18,11 @@ fn index_page() -> ApiResponse {
     }
 }
 
-pub fn mount(rocket: Rocket) -> Rocket {
-    let mut _rocket = rocket;
-    _rocket = _rocket.mount("/", routes![index_page]);
-    _rocket = home::mount(_rocket);
-    _rocket = bajo_jajo::mount(_rocket);
-    _rocket = send_message::mount(_rocket);
-    _rocket
+pub fn routes() -> Vec<Route> {
+    [
+        routes![index_page],
+        home::routes(),
+        bajo_jajo::routes(),
+        send_message::routes()
+    ].concat()
 }

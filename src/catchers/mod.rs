@@ -1,4 +1,4 @@
-use rocket::Rocket;
+use rocket::Catcher;
 use super::responder::ApiResponse;
 use rocket::http::Status;
 
@@ -26,6 +26,6 @@ fn bad_request() -> ApiResponse {
     }
 }
 
-pub fn mount(rocket: Rocket) -> Rocket {
-    rocket.register(catchers![not_found, internal_error, bad_request])
+pub fn catchers() -> Vec<Catcher> {
+    catchers![bad_request, not_found, internal_error]
 }

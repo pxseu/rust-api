@@ -8,6 +8,7 @@ extern crate serde_json;
 extern crate dotenv;
 
 use dotenv::dotenv;
+
 mod routes;
 mod responder;
 mod catchers;
@@ -15,8 +16,8 @@ mod catchers;
 fn main() {
     dotenv().ok();
 
-    let mut rocket = rocket::ignite();
-    rocket = routes::mount(rocket);
-    rocket = catchers::mount(rocket);
-    rocket.launch();
+    rocket::ignite()
+        .mount("/", routes::routes())
+        .register(catchers::catchers())
+        .launch();
 }
