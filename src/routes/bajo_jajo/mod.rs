@@ -3,27 +3,22 @@ use rocket::Route;
 use rocket::http::Status;
 use super::super::responder::ApiResponse;
 
-#[get("/v2/bajoJajo")]
-fn bajo_jajo_random() -> ApiResponse {
-    let mut rng = rand::thread_rng();
-
-    ApiResponse {
-        json: json!({"status": 200, "message": generate_bajo_jajo(rng.gen_range(1, 20))}),
-        status: Status::Ok,
-    }
-}
-
 #[get("/v2/bajoJajo?<repeat>")]
-fn bajo_jajo_defined(repeat: usize) -> ApiResponse {
-    if !(1 <= repeat && repeat >= 1000000) {
+fn bajo_jajo(repeat: Option<usize>) -> ApiResponse {
+    let local_repeat = if repeat.is_none() {
+        let mut rng = rand::thread_rng();
+        rng.gen_range(1, 20)
+    } else { repeat.unwrap() };
+
+    if  1 <= local_repeat && local_repeat >= 1000000 {
         return ApiResponse {
-            json: json!({"status": 400, "message": "The repeat size was too large or too smal.  (Should be between 1 and 1,000,000)"}),
+            json: json!({"status": 400, "message": "The repeat size was too large or too smal. (Should be between 1 and 1,000,000)"}),
             status: Status::BadRequest,
         }
     }
 
     ApiResponse {
-        json: json!({"status": 200, "message": generate_bajo_jajo(repeat)}),
+        json: json!({"status": 200, "message": generate_bajo_jajo(local_repeat)}),
         status: Status::Ok,
     }
 }
@@ -33,5 +28,5 @@ fn generate_bajo_jajo(repeat: usize) -> String {
 }
 
 pub fn routes() -> Vec<Route> {
-    routes![bajo_jajo_random, bajo_jajo_defined]
+    routes![bajo_jajo]
 }

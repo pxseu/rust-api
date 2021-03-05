@@ -5,6 +5,7 @@ authors = ["pxseu <57842793+pxseu@users.noreply.github.com>"]
 edition = "2018"
 
 [dependencies]
+url = "2.2.0"
 rand = "0.7.3"
 rocket = "0.4.6"
 serde = "1.0.117"

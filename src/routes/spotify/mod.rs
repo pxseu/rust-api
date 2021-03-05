@@ -1,14 +1,18 @@
+use std::env;
 use rocket::Route;
 use rocket::http::Status;
-use super::super::responder::ApiResponse;
 use rocket::response::Redirect;
-use std::env;
+use super::super::responder::ApiResponse;
+use url::form_urlencoded;
 
 #[get("/v2/spotify/authorize")]
 fn redirect_to_auth() -> Result<Redirect, ApiResponse> {
     let client_id = env::var("SPOTIFY_CLIENT_ID");
+    let redirect_uri = env::var("SPOTIFY_REDIRECT_URI");
+    
+    let scopes = "user-read-playback-state";
 
-    if client_id.is_err() {
+    if client_id.is_err() || redirect_uri.is_err() {
         return Err(
             ApiResponse {
                 json: json!({"status": 500, "message":"I forgot to set the env."}),
@@ -17,11 +21,31 @@ fn redirect_to_auth() -> Result<Redirect, ApiResponse> {
         )
     }
 
-    Ok(Redirect::to(format!("https://accounts.spotify.com/authorize?response_type=code&client_id={}&scope=user-read-playback-state&redirect_uri=https%3A%2F%2Fapi.pxseu.com%2Fv2%2Fspotify%2Fcallback", client_id.unwrap())))
+    Ok(Redirect::to(
+        form_urlencoded::Serializer::new("https://accounts.spotify.com/authorize?response_type=code".to_string())
+            .append_pair("client_id", &client_id.unwrap())
+            .append_pair("scope", scopes)
+            .append_pair("redirect_uri", &redirect_uri.unwrap())
+        .finish()
+    ))
 }
 
-#[get("/v2/spotify/callback?<code>")]
-fn callback(code: String) -> ApiResponse {
+#[get("/v2/spotify/callback?<code>&<error>")]
+fn callback(code: Option<String>, error: Option<String>) -> ApiResponse {
+    if error.is_some() {
+        return ApiResponse {
+            json: json!({"status": 400, "message": format!("Error: {}", error.unwrap())}),
+            status: Status::BadRequest,
+        }
+    } 
+
+    if code.is_none() {
+        return ApiResponse {
+            json: json!({"status": 400, "message": "Bad."}),
+            status: Status::BadRequest,
+        }
+    }
+
     ApiResponse {
         json: json!({"status": 200, "message": "Too lazy to implement.", "code": code}),
         status: Status::Ok,

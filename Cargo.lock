@@ -68,6 +68,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "ureq",
+ "url 2.2.1",
 ]
 
 [[package]]

@@ -6,17 +6,20 @@
 #[macro_use] extern crate serde_derive;
 extern crate serde_json;
 extern crate dotenv;
+extern crate url;
 
 use dotenv::dotenv;
 
 mod routes;
-mod responder;
 mod catchers;
+mod fairings;
+mod responder;
 
 fn main() {
     dotenv().ok();
 
     rocket::ignite()
+        .attach(fairings::ServerName())
         .mount("/", routes::routes())
         .register(catchers::catchers())
         .launch();
